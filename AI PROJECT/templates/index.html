@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>How are you feeling? — Friendly Check</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="container">
+    <header class="top">
+      <h1>Quick wellbeing check</h1>
+      <p class="lead">Short, friendly questions — takes about 3–5 minutes. Your answers stay on your device while taking the test.</p>
+    </header>
+
+    <form id="surveyForm" action="/submit" method="post" novalidate>
+      <div id="stepper" class="stepper">
+
+        <!-- Progress bar -->
+        <div class="progress-wrap">
+          <div id="progress" class="progress"></div>
+        </div>
+
+        <!-- Question card will render here -->
+        <div id="card" class="card animate"></div>
+
+        <!-- Navigation -->
+        <div class="nav">
+          <button type="button" id="backBtn" class="btn ghost" aria-label="Back">← Back</button>
+          <div class="nav-right">
+            <span id="stepLabel" class="muted">Question 1 of 31</span>
+            <button type="button" id="nextBtn" class="btn">Next →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- final submit button: shown by JS on last step (kept here for graceful fallback) -->
+      <button type="submit" id="finalSubmit" class="btn primary hidden">See my friendly report</button>
+    </form>
+
+    <footer class="footer">
+      <p class="small">If you feel unsafe at any point, please reach out to local emergency services or a trusted person.</p>
+    </footer>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Your Friendly Report</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="container">
+    <header class="top">
+      <h1>Your friendly wellbeing report</h1>
+      <p class="lead">This is not a diagnosis. If you feel unsafe, contact emergency services or a helpline right away.</p>
+    </header>
+
+    {% if urgent %}
+    <div class="card urgent">
+      <strong>Important:</strong> Your responses suggest you may need extra support. If you are in immediate danger, call emergency services now.
+      <p class="muted">{{ resources.india }}</p>
+    </div>
+    {% endif %}
+
+    <section class="grid">
+      <div class="card">
+        <h3>Mood & Interest</h3>
+        <p class="big">{{ mood_score }}</p>
+        <p class="muted">Status: <strong>{{ mood_label }}</strong></p>
+      </div>
+
+      <div class="card">
+        <h3>Worry & Restlessness</h3>
+        <p class="big">{{ worry_score }}</p>
+        <p class="muted">Status: <strong>{{ worry_label }}</strong></p>
+      </div>
+
+      <div class="card">
+        <h3>Stress</h3>
+        <p class="big">{{ stress_score }}</p>
+        <p class="muted">Status: <strong>{{ stress_label }}</strong></p>
+      </div>
+
+      <div class="card">
+        <h3>Sleep</h3>
+        <p class="big">{{ sleep_score }}</p>
+        <p class="muted">Status: <strong>{{ sleep_label }}</strong></p>
+      </div>
+
+      <div class="card">
+        <h3>Daily balance</h3>
+        <p class="big">{{ life_score }}</p>
+        <p class="muted">Status: <strong>{{ life_label }}</strong></p>
+      </div>
+    </section>
+
+    <div class="card">
+      <h3>Overall wellbeing</h3>
+      <p class="lead">{{ wellness_text }}</p>
+    </div>
+
+    <div class="card">
+      <h3>Friendly suggestions</h3>
+      <ul class="suggestions">
+        {% for s in suggestions %}
+          <li>
+            <strong>{{ s.title }}:</strong> {{ s.advice }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="actions">
+      <button class="btn" onclick="window.print()">📄 Save / Print report</button>
+      <a class="btn ghost" href="/">↩ Back to start</a>
+    </div>
+
+    <footer class="footer muted">
+      <p>If you feel unsafe, contact emergency services or local helplines immediately.</p>
+      <p>{{ resources.india }}</p>
+    </footer>
+  </main>
+</body>
+</html>

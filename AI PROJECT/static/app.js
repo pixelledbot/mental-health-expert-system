@@ -1,6 +1,4 @@
-// Single-question stepper logic (friendly language, calm UI)
-// This file renders questions, captures choices, updates progress, and posts result.
-
+// Single-question stepper logic adapted for 5 questions per page
 const form = document.getElementById("surveyForm");
 const card = document.getElementById("card");
 const nextBtn = document.getElementById("nextBtn");
@@ -9,7 +7,9 @@ const progressEl = document.getElementById("progress");
 const stepLabel = document.getElementById("stepLabel");
 const finalSubmit = document.getElementById("finalSubmit");
 
-// Friendly question sets (simple plain language)
+const QUESTIONS_PER_PAGE = 5;
+
+// Friendly question sets
 const questions = [
   // Mood & Interest (9)
   { id: "mood1", text: "Lately, have you lost interest in doing things you usually enjoy?" },
@@ -42,7 +42,7 @@ const questions = [
   // Sleep Quality (4)
   { id: "sleep1", text: "Have you had trouble falling asleep?" },
   { id: "sleep2", text: "Do you wake up during the night and find it hard to fall back asleep?" },
-  { id: "sleep3", text: "Do you feel rested when you wake up?" }, // reversed in mind: we'll interpret lower = worse
+  { id: "sleep3", text: "Do you feel rested when you wake up?" },
   { id: "sleep4", text: "Has your sleep quality changed compared to before?" },
 
   // Daily Lifestyle & Burnout (5)
@@ -53,7 +53,6 @@ const questions = [
   { id: "life5", text: "Do you feel disconnected from people around you?" }
 ];
 
-// Options used for all questions (friendly)
 const options = [
   { value: 0, label: "Not at all" },
   { value: 1, label: "Several days" },
@@ -66,64 +65,61 @@ const total = questions.length;
 const answers = new Array(total).fill(null);
 
 function renderCard() {
-  const q = questions[step];
-  card.innerHTML = `
+  const start = step * QUESTIONS_PER_PAGE;
+  const end = Math.min(start + QUESTIONS_PER_PAGE, total);
+  const pageQuestions = questions.slice(start, end);
+
+  card.innerHTML = pageQuestions.map((q, i) => `
     <div class="card animate">
       <div class="question-title">${q.text}</div>
-      <div class="options" id="options">${options.map(o => `
-        <div class="option" data-val="${o.value}">
-          <span>${o.label}</span>
-        </div>`).join("")}</div>
+      <div class="options" data-idx="${start + i}">
+        ${options.map(o => `
+          <div class="option" data-val="${o.value}">
+            <span>${o.label}</span>
+          </div>`).join("")}
+      </div>
     </div>
-  `;
+  `).join("");
 
-  // mark selected if previously answered
-  const opts = [...card.querySelectorAll(".option")];
-  opts.forEach(opt => {
-    opt.addEventListener("click", () => {
-      // visually select
-      opts.forEach(x => x.classList.remove("selected"));
-      opt.classList.add("selected");
-      // save answer
-      answers[step] = parseInt(opt.dataset.val, 10);
-      updateNav();
+  [...card.querySelectorAll(".options")].forEach(optGroup => {
+    const idxOffset = parseInt(optGroup.dataset.idx);
+    [...optGroup.querySelectorAll(".option")].forEach(opt => {
+      opt.addEventListener("click", () => {
+        optGroup.querySelectorAll(".option").forEach(x => x.classList.remove("selected"));
+        opt.classList.add("selected");
+        answers[idxOffset] = parseInt(opt.dataset.val, 10);
+        updateNav();
+      });
     });
   });
 
-  // if already answered, mark it
-  if (answers[step] !== null) {
-    const sel = opts.find(o => parseInt(o.dataset.val,10) === answers[step]);
-    if (sel) sel.classList.add("selected");
-  }
-
-  // update progress
-  const pct = Math.round(((step) / total) * 100);
+  const pct = Math.round((end / total) * 100);
   progressEl.style.width = `${pct}%`;
-  stepLabel.textContent = `Question ${step + 1} of ${total}`;
-  // show/hide nav buttons
+  stepLabel.textContent = `Questions ${start + 1}–${end} of ${total}`;
+
   backBtn.style.visibility = step === 0 ? "hidden" : "visible";
-  nextBtn.textContent = step === total - 1 ? "Finish" : "Next →";
+  nextBtn.textContent = end >= total ? "Finish" : "Next →";
+
+  updateNav();
 }
 
 function updateNav() {
-  // enable next only if current answered
-  if (answers[step] !== null) {
-    nextBtn.disabled = false;
-    nextBtn.classList.remove("ghost");
-  } else {
-    nextBtn.disabled = true;
-    nextBtn.classList.add("ghost");
-  }
+  const start = step * QUESTIONS_PER_PAGE;
+  const end = Math.min(start + QUESTIONS_PER_PAGE, total);
+  const allAnswered = answers.slice(start, end).every(a => a !== null);
+  nextBtn.disabled = !allAnswered;
+  nextBtn.classList.toggle("ghost", !allAnswered);
 }
 
 nextBtn.addEventListener("click", () => {
-  if (answers[step] === null) return; // safety
-  if (step < total - 1) {
+  const start = step * QUESTIONS_PER_PAGE;
+  const end = Math.min(start + QUESTIONS_PER_PAGE, total);
+  if (!answers.slice(start, end).every(a => a !== null)) return;
+  
+  if (end < total) {
     step++;
     renderCard();
-    updateNav();
   } else {
-    // final - build hidden inputs and submit
     buildAndSubmit();
   }
 });
@@ -132,13 +128,10 @@ backBtn.addEventListener("click", () => {
   if (step > 0) {
     step--;
     renderCard();
-    updateNav();
   }
 });
 
 function buildAndSubmit() {
-  // Build hidden inputs in the form using expected prefixes/counts:
-  // mood1..mood9, worry1..worry7, stress1..stress6, sleep1..sleep4, life1..life5
   const mapping = [
     { prefix: "mood", count: 9 },
     { prefix: "worry", count: 7 },
@@ -147,7 +140,6 @@ function buildAndSubmit() {
     { prefix: "life", count: 5 }
   ];
 
-  // clear any existing hidden inputs
   [...form.querySelectorAll("input[type=hidden]")].forEach(n => n.remove());
 
   let idx = 0;
@@ -162,10 +154,8 @@ function buildAndSubmit() {
     }
   });
 
-  // submit the form
   form.submit();
 }
 
 // initial render
 renderCard();
-updateNav();

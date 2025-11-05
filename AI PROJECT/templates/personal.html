@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Personal Info — Friendly Check</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="container">
+    <header class="top">
+      <h1>Tell us a bit about yourself</h1>
+      <p class="lead">This info helps us personalize your report.</p>
+    </header>
+
+    <form action="{{ url_for('personal') }}" method="post">
+      <div class="card">
+        <label>Name</label>
+        <input type="text" name="name" required>
+      </div>
+      <div class="card">
+        <label>Age</label>
+        <input type="number" name="age" required>
+      </div>
+      <div class="card">
+        <label>Gender</label>
+        <select name="gender" required>
+          <option value="">Select</option>
+          <option value="Female">Female</option>
+          <option value="Male">Male</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <button type="submit" class="btn primary">Proceed to Survey</button>
+    </form>
+  </main>
+</body>
+</html>

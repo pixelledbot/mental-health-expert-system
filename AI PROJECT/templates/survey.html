@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Survey</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<main class="container">
+<header class="top">
+<h1>Survey</h1>
+<p class="lead">Answer honestly, it's all confidential.</p>
+</header>
+
+<form id="surveyForm" action="/submit" method="post">
+  <div id="stepper" class="stepper">
+    <div class="progress-wrap">
+      <div id="progress" class="progress"></div>
+    </div>
+    <div id="card" class="card animate"></div>
+
+    <div class="nav">
+      <button type="button" id="backBtn" class="btn ghost">← Back</button>
+      <div class="nav-right">
+        <span id="stepLabel" class="muted">Question 1 of 60+</span>
+        <button type="button" id="nextBtn" class="btn">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" id="finalSubmit" class="btn primary hidden">See my friendly report</button>
+</form>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</main>
+</body>
+</html>

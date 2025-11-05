@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Welcome — Friendly Check</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="container">
+    <header class="top">
+      <h1>Welcome to Your Friendly Wellbeing Check</h1>
+      <p class="lead">Take a short survey to understand your mood, stress, and daily habits.</p>
+      <a href="{{ url_for('personal') }}" class="btn primary">Start</a>
+    </header>
+  </main>
+</body>
+</html>
